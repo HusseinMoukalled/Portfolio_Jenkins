@@ -1,17 +1,16 @@
 @echo off
-REM Switch to Minikube Docker
+REM Use Minikube's Docker daemon
 FOR /f "tokens=*" %%i IN ('minikube docker-env') DO @%%i
 
-REM Build image
+REM Build new image inside Minikube
 docker build -t portfolio:latest .
 
-REM Force kubeconfig path
-SET KUBECONFIG=C:\Users\hussein\.kube\config
+REM Ensure kubectl uses your user kubeconfig
+SET KUBECONFIG=C:\Users\Hussein\.kube\config
 
-REM Apply manifests
+REM Apply YAMLs
 kubectl apply -f k8s\deployment.yaml
 kubectl apply -f k8s\service.yaml
 
-REM ✅ Force pod restart to pick up fresh image
+REM ✅ Force pods to restart so they pull the new image
 kubectl rollout restart deployment portfolio-deployment
-
