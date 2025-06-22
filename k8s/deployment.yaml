@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: portfolio:TAG
-          imagePullPolicy: Never
+          image: localhost:5000/portfolio:latest   
+          imagePullPolicy: Always                  
           ports:
             - containerPort: 8000
