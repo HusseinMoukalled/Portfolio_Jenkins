@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: portfolio
-          image: portfolio:latest  # uses your local image tag
-          imagePullPolicy: IfNotPresent
+          image: portfolio:TAG
+          imagePullPolicy: Never
           ports:
             - containerPort: 8000
