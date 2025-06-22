@@ -1,24 +1,18 @@
 @echo off
-REM Generate unique tag
+REM === ✅ Set dynamic tag ===
 SET TAG=%RANDOM%-%TIME:~6,2%%TIME:~3,2%%TIME:~0,2%
 
-REM Build locally
+REM === ✅ Use Minikube internal registry ===
+SET REGISTRY=registry.kube-system.svc.cluster.local:50681
+
+REM === ✅ Build and push ===
 docker build -t portfolio:%TAG% .
+docker tag portfolio:%TAG% %REGISTRY%/portfolio:%TAG%
+docker push %REGISTRY%/portfolio:%TAG%
 
-REM Tag for local registry
-docker tag portfolio:%TAG% localhost:5000/portfolio:%TAG%
-
-REM Push to local registry
-docker push localhost:5000/portfolio:%TAG%
-
-REM Use kubeconfig
-SET KUBECONFIG=C:\Users\Hussein\.kube\config
-
-REM Apply deployment
+REM === ✅ Apply deployment ===
 kubectl apply -f k8s\deployment.yaml
+kubectl set image deployment/portfolio-deployment portfolio=%REGISTRY%/portfolio:%TAG%
 
-REM Force deployment to use new image from local registry
-kubectl set image deployment/portfolio-deployment portfolio=localhost:5000/portfolio:%TAG%
-
-REM Apply service
+REM === ✅ Apply service ===
 kubectl apply -f k8s\service.yaml
