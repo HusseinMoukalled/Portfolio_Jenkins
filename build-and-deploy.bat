@@ -5,6 +5,9 @@ FOR /f "tokens=*" %%i IN ('minikube docker-env') DO @%%i
 REM Build Docker image
 docker build -t portfolio:latest .
 
+REM Force kubectl to use your user kubeconfig
+SET KUBECONFIG=C:\Users\hussein\.kube\config
+
 REM Apply Kubernetes manifests
 kubectl apply -f k8s\deployment.yaml
 kubectl apply -f k8s\service.yaml
