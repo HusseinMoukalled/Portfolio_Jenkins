@@ -1,20 +1,21 @@
 @echo off
-REM --- BUILD IMAGE IN HOST DOCKER ---
+REM Generate unique tag
 SET TAG=%RANDOM%-%TIME:~6,2%%TIME:~3,2%%TIME:~0,2%
 
+REM Build image in host Docker
 docker build -t portfolio:%TAG% .
 
-REM --- COPY IMAGE INTO MINIKUBE ---
-minikube image load portfolio:%TAG%
+REM Load image into Minikube and specify the profile
+minikube image load portfolio:%TAG% --profile=minikube
 
-REM --- CONFIGURE KUBECTL ---
+REM Use your kubeconfig
 SET KUBECONFIG=C:\Users\Hussein\.kube\config
 
-REM --- APPLY YAML (ensures deployment exists) ---
+REM Apply deployment YAML
 kubectl apply -f k8s\deployment.yaml
 
-REM --- FORCE DEPLOYMENT TO USE THE NEW IMAGE TAG ---
+REM Force Deployment to use the new tag
 kubectl set image deployment/portfolio-deployment portfolio=portfolio:%TAG%
 
-REM --- APPLY SERVICE FOR GOOD MEASURE ---
+REM Apply service YAML
 kubectl apply -f k8s\service.yaml
