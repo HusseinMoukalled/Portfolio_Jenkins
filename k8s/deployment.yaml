@@ -1,22 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: portfolio-deployment
-  labels:
-    app: portfolio
+  name: django-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: portfolio
+      app: django-app
   template:
     metadata:
       labels:
-        app: portfolio
+        app: django-app
     spec:
       containers:
-        - name: portfolio
-          image: registry.kube-system.svc.cluster.local:50681/portfolio:latest
-          imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
+      - name: django-container
+        image: mydjangoapp:latest
+        ports:
+        - containerPort: 8000
