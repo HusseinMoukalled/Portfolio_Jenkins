@@ -12,14 +12,22 @@ pipeline {
       }
     }
 
-    stage('Deploy to Kubernetes') {
+    stage('Build in Minikube Docker') {
       steps {
-        script {
-          sh """
-            kubectl set image deployment/django-deployment django-container=mydjangoapp:latest --record
-            kubectl rollout status deployment/django-deployment
-          """
-        }
+        bat '''
+        call minikube docker-env --shell=cmd > docker_env.bat
+        call docker_env.bat
+        docker build -t mydjangoapp:latest .
+        '''
+      }
+    }
+
+    stage('Deploy to Minikube') {
+      steps {
+        bat '''
+        kubectl set image deployment/django-deployment django-container=mydjangoapp:latest --record
+        kubectl rollout status deployment/django-deployment
+        '''
       }
     }
   }
