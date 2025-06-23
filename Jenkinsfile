@@ -1,10 +1,6 @@
 pipeline {
   agent any
 
-  environment {
-    IMAGE_NAME = "mydjangoapp:latest"
-  }
-
   triggers {
     pollSCM('H/2 * * * *')
   }
@@ -16,22 +12,11 @@ pipeline {
       }
     }
 
-    stage('Build inside Minikube Docker') {
-      steps {
-        script {
-          sh '''
-            eval $(minikube docker-env)
-            docker build -t ${IMAGE_NAME} .
-          '''
-        }
-      }
-    }
-
     stage('Deploy to Kubernetes') {
       steps {
         script {
           sh """
-            kubectl set image deployment/django-deployment django-container=${IMAGE_NAME} --record
+            kubectl set image deployment/django-deployment django-container=mydjangoapp:latest --record
             kubectl rollout status deployment/django-deployment
           """
         }
