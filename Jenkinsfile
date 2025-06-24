@@ -2,6 +2,7 @@ pipeline {
   agent any
 
   triggers {
+    // Poll GitHub every 2 minutes
     pollSCM('H/2 * * * *')
   }
 
@@ -16,11 +17,11 @@ pipeline {
     stage('Build in Minikube Docker') {
       steps {
         bat '''
-        REM Switch Docker to Minikube's internal Docker daemon
+        REM === Switch Docker to Minikube Docker ===
         call minikube docker-env --shell=cmd > docker_env.bat
         call docker_env.bat
 
-        REM Build your Django image inside Minikube's Docker
+        REM === Build Django image inside Minikube Docker ===
         docker build -t mydjangoapp:latest .
         '''
       }
@@ -29,13 +30,10 @@ pipeline {
     stage('Deploy to Minikube') {
       steps {
         bat '''
-        REM Update deployment to use the freshly built image
-        kubectl set image deployment/django-deployment django-container=mydjangoapp:latest --record
+        REM === Apply the updated deployment manifest ===
+        kubectl apply -f deployment.yaml
 
-        REM FORCE Kubernetes to restart the pod to pick up the new image, even if tag is still "latest"
-        kubectl rollout restart deployment/django-deployment
-
-        REM Wait for the rollout to complete
+        REM === Ensure the rollout completes ===
         kubectl rollout status deployment/django-deployment
         '''
       }
