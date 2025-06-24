@@ -1,7 +1,6 @@
 pipeline {
   agent any
 
-  // Automatically check GitHub every 2 minutes
   triggers {
     pollSCM('H/2 * * * *')
   }
