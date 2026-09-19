@@ -20,3 +20,7 @@ jobs:
 
       - name: Django system check
         run: python manage.py check
+
+
+      - name: Build Docker image
+        run: docker build -t portfolio:latest .
