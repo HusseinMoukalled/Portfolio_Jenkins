@@ -36,3 +36,18 @@ jobs:
 
       - name: Push Docker image
         run: docker push ghcr.io/husseinmoukalled/portfolio_jenkins:latest
+    deploy:
+      needs: test
+      runs-on: [self-hosted, portfolio-deploy]
+      steps:
+        - name: Check Docker on Windows
+          if: runner.os == 'Windows'
+          shell: powershell
+          run: docker info
+
+        - name: Check Docker on macOS
+          if: runner.os == 'macOS'
+          shell: bash
+          run: docker info
+
+          
